@@ -1,0 +1,61 @@
+<title>ServerNodeJS</title>
+<body style="margin: 0px">
+    <canvas id="canvas"></canvas>
+    <script src="./socket.io/socket.io.js"></script>
+<script>
+    
+    const canvas = document.getElementById("canvas"),
+          c = canvas.getContext('2d');
+    
+    let w = canvas.width = 410;
+    let h = canvas.height = 280;
+    
+    //var socket = io.connect('http://localhost:3000');
+    var socket = io.connect();
+    let acum = 0;
+    
+    console.log(socket);
+    
+    socket.on('mouse', newDrawing);
+    
+    function newDrawing(data){
+        circle(15, data.x, data.y, "#6d2c45")
+    }
+    
+    c.fillStyle = "#474058";
+    c.fillRect(0, 0, w, h);
+    
+    function circle(r, x, y, color){
+        
+        c.fillStyle = color || "#78a88c";
+        c.beginPath();
+        c.arc(x, y, r, 0, Math.PI*2);
+        c.fill();
+    }
+    
+    canvas.addEventListener('mousemove', e => {
+    
+        let x = e.clientX;
+        let y = e.clientY;
+        
+        circle(18, x, y);
+        
+        let data = {
+            x: x,
+            y: y
+        }
+        
+        socket.emit('mouse', data);
+        
+        acum++;
+        
+        if (acum>200) {
+            acum = 0;
+            c.fillStyle = "#474058";
+            c.fillRect(0, 0, w, h);
+        }
+        
+    });
+    
+</script>
+</body>
